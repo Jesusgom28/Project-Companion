@@ -3,6 +3,8 @@ import {createRoot} from 'react-dom/client';
 import {Check,Plus,Heart,CalendarDays,UserRound,Volume2,VolumeX,MessageCircle,Trash2,RotateCcw,Sparkles} from 'lucide-react';
 import {STORAGE_KEY,companions,starterTasks,today,levelFromXp,tierFromLevel,initialState,normalizeState,completeTask,uncompleteTask,pickDialogue} from './logic';
 import './style.css';
+import DailyCheckIn from './DailyCheckIn';
+import TaskScheduler from './TaskScheduler';
 import DailyPlanningChat from './DailyPlanningChat';
 import {stories,availableStories,chatSystemPrompt} from './conversations';
 function App(){
@@ -41,7 +43,20 @@ function addPlannedTasks(plans) {
   );
 }
 
- function addTask(e){e.preventDefault();const title=newTask.trim();if(!title)return;setData(d=>({...d,tasks:[...d.tasks,{id:globalThis.crypto?.randomUUID?.()||String(Date.now()),title,category,xp:Number(difficulty),recurring,completedOn:[]}]}));setNewTask('')}
+ 
+function updateTaskSchedule(taskId, changes) {
+  setData(current => ({
+    ...current,
+    tasks: current.tasks.map(task =>
+      task.id === taskId
+        ? { ...task, ...changes }
+        : task
+    )
+  }));
+}
+
+
+function addTask(e){e.preventDefault();const title=newTask.trim();if(!title)return;setData(d=>({...d,tasks:[...d.tasks,{id:globalThis.crypto?.randomUUID?.()||String(Date.now()),title,category,xp:Number(difficulty),recurring,completedOn:[]}]}));setNewTask('')}
  function removeTask(id){setData(d=>{let next=d;const task=d.tasks.find(t=>t.id===id);if(task?.completedOn?.includes(date))next=uncompleteTask(d,id,date);return {...next,tasks:next.tasks.filter(t=>t.id!==id)}})}
  function setVoice(value){setData(d=>({...d,settings:{...d.settings,voice:value}}));if(!value&&'speechSynthesis'in window)window.speechSynthesis.cancel()}
  return <div className="app"><header className="top"><div className="brand"><span className="brandmark">✦</span><div><b>PROJECT COMPANION</b><small>Make every day count</small></div></div><span className="today">{new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</span></header>
@@ -50,6 +65,24 @@ function addPlannedTasks(plans) {
  {tab === 'home' && (
   <DailyPlanningChat onAddTasks={addPlannedTasks} />
 )}
+ 
+ {tab === 'home' && (
+  <DailyCheckIn
+    onPlan={() => {
+      setTab('home');
+      document.querySelector('.planningChat')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    }}
+  />
+)}
+
+{tab === 'planner' && (
+  <TaskScheduler
+    tasks={data.tasks}
+    onUpdateTask={updateTaskSchedule}
+  />
+)}
+
  {tab==='planner'&&<><div className="panel"><h2>Add a task</h2><form onSubmit={addTask} className="taskform"><input aria-label="Task name" value={newTask} maxLength={100} onChange={e=>setNewTask(e.target.value)} placeholder="What would you like to do?" required/><div className="formrow"><select aria-label="Category" value={category} onChange={e=>setCategory(e.target.value)}>{['Personal','Self-care','Study','Work','Home','Wellness'].map(c=><option key={c}>{c}</option>)}</select><select aria-label="XP reward" value={difficulty} onChange={e=>setDifficulty(e.target.value)}><option value="5">Easy · 5 XP</option><option value="10">Medium · 10 XP</option><option value="15">Hard · 15 XP</option></select></div><label className="checklabel"><input type="checkbox" checked={recurring} onChange={e=>setRecurring(e.target.checked)}/> Repeat daily</label><button className="primary" type="submit"><Plus size={17}/> Add task</button></form></div><div className="sectionhead"><h2>Your tasks</h2><span>{data.tasks.length} total</span></div><TaskList tasks={data.tasks} date={date} toggle={toggle} remove={removeTask}/><p className="hint">Daily tasks reset each new day. One-time tasks stay completed. XP is awarded once per task per day.</p></>}
  {tab==='companions'&&<><div className="panel companionCard"><img src={character.alt} alt="Bruno Bucciarati alternate portrait"/><div><span className="eyebrow">ACTIVE COMPANION</span><h2>{character.name}</h2><p>Calm, loyal, and encouraging. A dependable mentor who believes in steady progress.</p><span className="level">♥ Level {level} · {tierFromLevel(level)}</span><div className="bar"><div style={{width:`${xp%100}%`}}/></div><small>{xp} total relationship XP</small></div></div><div className="panel"><h2>Relationship milestones</h2><div className="milestones">{[[1,'New Partner'],[5,'Acquaintance'],[10,'Friend'],[20,'Close Friend'],[35,'Trusted Companion'],[50,'Trusted Partner']].map(([n,name])=><div className="milestone" key={n}><span className={level>=n?'unlocked':'locked'}>{level>=n?'✓':'🔒'}</span><span>Level {n} — {name}</span></div>)}</div></div><div className="panel"><h2>Talk with Bruno</h2><p className="hint">Choose a scripted story or chat freely using a local AI model. Neither mode changes XP.</p><div className="modeTabs"><button className={mode==='story'?'chosen':''} onClick={()=>setMode('story')}>Visual novel</button><button className={mode==='chat'?'chosen':''} onClick={()=>setMode('chat')}>AI free chat</button></div>{mode==='story'?<div className="storyArea">{!scene?<div className="storyGrid">{availableStories(level).map(s=><button key={s.id} className="storyTile" disabled={!s.unlocked} onClick={()=>startScene(s)}><b>{s.unlocked?'📖':'🔒'} {s.title}</b><small>{s.summary}</small><small>{s.unlocked?'Start story':`Unlocks at level ${s.min}`}</small></button>)}</div>:<div className="novel"><div className="novelHero"><img src={stories.find(s=>s.id===scene)?.nodes[node]?.portrait==='alt'?character.alt:character.image} alt="Bruno expression"/><div><span className="eyebrow">{stories.find(s=>s.id===scene)?.title}</span><h3>Bruno Bucciarati</h3><p>{stories.find(s=>s.id===scene)?.nodes[node]?.line}</p></div></div><div className="choices">{stories.find(s=>s.id===scene)?.nodes[node]?.choices.map((choice,i)=><button key={i} onClick={()=>chooseStory(choice.next)}>{choice.text}</button>)}<button className="secondaryButton" onClick={()=>setScene(null)}>{stories.find(s=>s.id===scene)?.nodes[node]?.choices.length?'Back to stories':'Finish conversation'}</button></div></div>}</div>:<div className="chatArea"><p className="hint">AI runs through Ollama on your computer. Chat messages stay in this browser and are sent to your local Ollama server. Requires setup in README.</p><div className="chatMessages" role="log" aria-label="Chat history">{chatHistory.length===0&&<p className="hint">Say hello to Bruno to begin.</p>}{chatHistory.map((m,i)=><div className={`chatBubble ${m.role==='user'?'mine':'theirs'}`} key={i}><b>{m.role==='user'?'You':'Bruno'}</b><p>{m.content}</p></div>)}</div>{chatError&&<p className="chatError" role="alert">{chatError}</p>}<form className="chatForm" onSubmit={sendChat}><input value={chatInput} onChange={e=>setChatInput(e.target.value)} maxLength={1200} placeholder="Type a message to Bruno..." aria-label="Message Bruno"/><button className="primary" disabled={chatBusy||!chatInput.trim()}>{chatBusy?'Thinking...':'Send'}</button></form><button className="textButton" onClick={()=>{if(window.confirm('Clear your chat history?')){setData(d=>({...d,chatHistory:[]}));setChatError('')}}}>Clear chat history</button></div>}</div><p className="hint">More companions can be added later, each with separate relationship progress.</p></>}
  {tab==='profile'&&<><div className="stats"><div className="panel"><b>{data.history.length}</b><span>Task completions</span></div><div className="panel"><b>{xp}</b><span>Relationship XP</span></div><div className="panel"><b>{level}</b><span>Bruno's level</span></div></div><div className="panel"><h2>Preferences</h2><label className="setting"><span>{data.settings.voice?<Volume2 size={19}/>:<VolumeX size={19}/>} Speak dialogue aloud <small>Uses your browser's text-to-speech voice, not the character's actual voice.</small></span><input type="checkbox" checked={data.settings.voice} onChange={e=>setVoice(e.target.checked)}/></label></div><div className="panel"><h2>About your progress</h2><p className="hint">Saved automatically in this browser using local storage. It will not sync to other devices or Base44.</p><button className="danger" onClick={()=>{if(window.confirm('Reset all tasks and relationship progress? This cannot be undone.')){setData(initialState());setDialog('We can start fresh. I’m here to help.')}}}><RotateCcw size={16}/> Reset all progress</button></div></>}

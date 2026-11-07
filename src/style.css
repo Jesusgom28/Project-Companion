@@ -80,3 +80,127 @@
     flex-direction: column;
   }
 }
+
+
+
+/* Project Companion v0.4 */
+
+.v04-checkin,
+.v04-scheduler {
+  background: #242032;
+  color: #f8f4ff;
+  border: 1px solid #55445f;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 22px 0;
+}
+
+.v04-checkin-header,
+.v04-task-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.v04-checkin-header {
+  justify-content: flex-start;
+  color: #f5a9d0;
+}
+
+.v04-checkin p {
+  line-height: 1.6;
+}
+
+.v04-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.v04-actions button,
+.v04-scheduler button {
+  background: #b56baf;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+}
+
+.v04-actions button:hover,
+.v04-scheduler button:hover {
+  background: #9c5597;
+}
+
+.v04-muted {
+  color: #c9bfd0;
+  font-size: 0.9rem;
+}
+
+.v04-task-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.v04-task {
+  background: #1c1928;
+  border: 1px solid #51445c;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.v04-task-heading span {
+  font-size: 0.85rem;
+  color: #f0aed3;
+}
+
+.v04-task label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.v04-task input,
+.v04-task select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px;
+  border-radius: 10px;
+  border: 1px solid #65556e;
+  background: #292438;
+  color: white;
+  font: inherit;
+}
+
+.v04-alert {
+  background: #3b2946;
+  border: 1px solid #bc81c4;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 12px 0;
+}
+
+.v04-alert p {
+  margin: 8px 0 12px;
+}
+
+@media (max-width: 520px) {
+  .v04-checkin,
+  .v04-scheduler {
+    padding: 14px;
+  }
+
+  .v04-actions {
+    flex-direction: column;
+  }
+
+  .v04-actions button {
+    width: 100%;
+  }
+}
+
+
+
