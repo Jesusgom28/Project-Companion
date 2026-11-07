@@ -1,3 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-export default defineConfig({plugins:[react()],server:{proxy:{'/api/chat':{target:'http://127.0.0.1:11434',changeOrigin:true,rewrite:path=>path.replace(/^\/api/,'/api/')}}}});
+
+export default defineConfig({
+  base: '/Project-Companion/',
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api/chat': {
+        target: 'http://127.0.0.1:11434',
+        changeOrigin: true
+      }
+    }
+  }
+});
