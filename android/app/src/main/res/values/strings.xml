@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Companion Quest</string>
+    <string name="title_activity_main">Companion Quest</string>
+    <string name="package_name">com.jesusgom28.companionquest</string>
+    <string name="custom_url_scheme">com.jesusgom28.companionquest</string>
+</resources>
