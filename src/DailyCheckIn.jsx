@@ -14,9 +14,30 @@ function localDate() {
 function greeting() {
   const hour = new Date().getHours();
 
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
+  if (hour < 12) {
+    return (
+      "Buongiorno! It's good to see you this morning. " +
+      "A new day means new opportunities. Andiamo! " +
+      "Do you have anything important planned for today? " +
+      "I can help you organize it."
+    );
+  }
+
+  if (hour < 17) {
+    return (
+      "Buon pomeriggio! I hope your day is going well. " +
+      "If there's still something you need to accomplish, " +
+      "we can make a plan together. Forza! " +
+      "What would you like to focus on?"
+    );
+  }
+
+  return (
+    "Buonasera! It's good to see you. " +
+    "Even if today was difficult, there's still value " +
+    "in the effort you've made. " +
+    "Would you like to organize anything before the day ends?"
+  );
 }
 
 export default function DailyCheckIn({ onPlan }) {
@@ -29,11 +50,7 @@ export default function DailyCheckIn({ onPlan }) {
       const previous = localStorage.getItem(CHECKIN_KEY);
 
       setVisible(previous !== date);
-      setMessage(
-        `${greeting()}. It's good to see you. ` +
-        'Do you have anything important planned for today? ' +
-        "I can help you organize it."
-      );
+      setMessage(greeting());
     };
 
     check();
@@ -63,7 +80,7 @@ export default function DailyCheckIn({ onPlan }) {
   return (
     <section className="v04-checkin">
       <div className="v04-checkin-header">
-        <span>☀️</span>
+        <span role="img" aria-label="Sun">☀️</span>
         <strong>Bruno's Daily Check-in</strong>
       </div>
 
@@ -71,7 +88,7 @@ export default function DailyCheckIn({ onPlan }) {
 
       <div className="v04-actions">
         <button type="button" onClick={plan}>
-          Plan my day
+          Andiamo! Plan my day
         </button>
 
         <button type="button" onClick={dismiss}>
