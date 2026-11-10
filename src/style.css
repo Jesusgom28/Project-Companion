@@ -256,20 +256,28 @@ main {
   background:transparent;
   color:#a8a3b7
 }
+/* ==========================================
+   BOTTOM NAVIGATION
+   ========================================== */
+
 .bottom {
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  max-width:980px;
-  width:100%;
-  height:74px;
-  background:#181927ee;
-  backdrop-filter:blur(15px);
-  border-top:1px solid #343144;
-  display:flex;
-  justify-content:space-around;
-  z-index:5
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  max-width: 980px;
+  width: 100%;
+  height: 74px;
+
+  background: #181927ee;
+  backdrop-filter: blur(15px);
+  border-top: 1px solid #343144;
+
+  display: flex;
+  justify-content: space-around;
+
+  z-index: 5;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .bottom button {
@@ -1091,3 +1099,352 @@ blockquote {
     animation: none;
   }
 }
+
+
+/* ==========================================
+   COMPANION LOBBY — IDLE ANIMATION
+   ========================================== */
+
+/*
+ * Gives the companion a subtle breathing motion.
+ * Only the character image moves, not the Lobby.
+ */
+.lobby-character img {
+  animation: companion-idle 3.5s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+/*
+ * A small vertical movement and slight scaling
+ * create the appearance of gentle breathing.
+ */
+@keyframes companion-idle {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-5px) scale(1.012);
+  }
+}
+
+/*
+ * Accessibility:
+ * Disable continuous animation for users
+ * who prefer reduced motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .lobby-character img {
+    animation: none;
+  }
+}
+
+
+/* ==========================================
+   COMPANION LOBBY — TAP REACTION
+   ========================================== */
+
+/*
+ * When the player taps Bruno, briefly
+ * animate his image to acknowledge the tap.
+ */
+.lobby-character.lobby-reacting img {
+  animation: companion-tap 0.45s ease-out;
+}
+
+/*
+ * A small lean and bounce makes the character
+ * appear to react to the player's interaction.
+ */
+@keyframes companion-tap {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  35% {
+    transform: translateY(-12px) scale(1.035) rotate(-1deg);
+  }
+
+  70% {
+    transform: translateY(-4px) scale(1.015) rotate(0.5deg);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Respect accessibility preferences. */
+@media (prefers-reduced-motion: reduce) {
+  .lobby-character.lobby-reacting img {
+    animation: none;
+  }
+}
+
+/* ==========================================
+   COMPANION LOBBY — RELATIONSHIP REWARDS
+   ========================================== */
+
+.lobby-next-reward {
+  margin: 12px 0;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(25, 25, 40, 0.9);
+  color: #fff;
+}
+
+.lobby-reward-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lobby-reward-heading span {
+  color: #d5a6e8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.lobby-reward-heading strong {
+  font-size: 1rem;
+}
+
+.lobby-next-reward p {
+  margin: 8px 0 0;
+  color: #c8c8d5;
+  font-size: 0.85rem;
+}
+
+/* ==========================================
+   RELATIONSHIP REWARD PROGRESS BAR
+   ========================================== */
+
+.lobby-reward-progress {
+  width: 100%;
+  height: 10px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.lobby-reward-progress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #b58cff,
+    #f4a6d7
+  );
+  transition: width 0.35s ease;
+}
+
+.lobby-next-reward small {
+  display: block;
+  margin-top: 8px;
+  color: #c8c8d5;
+}
+
+
+/* ========================================
+   COMPANION QUEST — REWARD BOX BUTTONS
+   ======================================== */
+
+/* Reward information on the left,
+   action buttons on the right. */
+.lobby-reward-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.lobby-reward-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.lobby-reward-info p {
+  margin: 6px 0 0;
+}
+
+/* Two compact buttons */
+.lobby-reward-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lobby-reward-actions .lobby-reward-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 105px;
+  min-height: 68px;
+  padding: 10px 12px;
+  border: 1px solid #a77b9b;
+  border-radius: 12px;
+  background: #30263c;
+  color: #f8d3e6;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.lobby-reward-actions .lobby-reward-button:hover {
+  background: #4a3455;
+  transform: translateY(-2px);
+}
+
+.lobby-reward-actions .lobby-reward-button:focus-visible {
+  outline: 2px solid #f3b6d2;
+  outline-offset: 3px;
+}
+
+.lobby-reward-button span:first-child {
+  font-size: 1.35rem;
+}
+
+/* Keep buttons compact on mobile */
+@media (max-width: 600px) {
+  .lobby-reward-top {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .lobby-reward-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .lobby-reward-actions .lobby-reward-button {
+    min-width: 0;
+    min-height: 54px;
+    padding: 8px;
+  }
+}
+
+
+/* ========================================
+   COMPANION QUEST — CHARACTER COLLECTION
+   ======================================== */
+
+.character-collection {
+  padding: 20px;
+  color: #ffffff;
+}
+
+.character-collection-header {
+  margin-bottom: 24px;
+}
+
+.character-collection-header h2 {
+  margin: 16px 0 8px;
+  color: #f3b6d2;
+}
+
+.character-collection-header p {
+  color: #c7bfd0;
+}
+
+/* Character selection grid */
+.character-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* Individual character card */
+.character-collection-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  background: #292237;
+  border: 1px solid #574561;
+  border-radius: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.character-collection-card:hover {
+  transform: translateY(-4px);
+  border-color: #f3b6d2;
+}
+
+/* Keep portraits contained inside cards */
+.character-collection-card img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #1c1829;
+}
+
+.character-collection-card strong {
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.character-collection-card small {
+  color: #c7bfd0;
+  font-size: 0.8rem;
+}
+
+/* Active companion indicator */
+.character-active-label {
+  padding: 5px 10px;
+  background: #4a304c;
+  border: 1px solid #d69abf;
+  border-radius: 20px;
+  color: #f3b6d2;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Tablet */
+@media (max-width: 800px) {
+  .character-collection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phone */
+@media (max-width: 480px) {
+  .character-collection {
+    padding: 12px;
+  }
+
+  .character-collection-grid {
+    gap: 10px;
+  }
+
+  .character-collection-card {
+    padding: 10px;
+  }
+
+  .character-collection-card img {
+    height: 160px;
+  }
+
+  .character-collection-card strong {
+    font-size: 0.85rem;
+  }
+}
+
+

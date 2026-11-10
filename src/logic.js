@@ -1,6 +1,14 @@
 
 export const STORAGE_KEY = 'project-companion-v1';
 
+
+/*
+ * Companion Quest — Character Roster
+ *
+ * Each companion has a unique ID.
+ * Relationship XP is stored separately by ID.
+ */
+
 export const companions = [
   {
     id: 'bruno',
@@ -8,8 +16,16 @@ export const companions = [
     role: 'Your dependable mentor',
     image: `${import.meta.env.BASE_URL}characters/bruno-main.jpg`,
     alt: `${import.meta.env.BASE_URL}characters/bruno-alt.jpg`
+  },
+  {
+    id: 'josuke',
+    name: 'Josuke Higashikata',
+    role: 'Your loyal and energetic friend',
+    image: `${import.meta.env.BASE_URL}characters/josuke-classic-full.webp`,
+    alt: `${import.meta.env.BASE_URL}characters/josuke-classic-full.webp`
   }
 ];
+
 
 export const starterTasks = [
   { title: 'Brush your teeth', category: 'Self-care', xp: 5, recurring: true },

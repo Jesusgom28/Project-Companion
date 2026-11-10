@@ -30,7 +30,9 @@ import './style.css';
 import DailyCheckIn from './DailyCheckIn';
 import TaskScheduler from './TaskScheduler';
 import DailyPlanningChat from './DailyPlanningChat';
-import Lobby from './Lobby';
+import Lobby from './lobby';
+// Character selection screen
+import CharacterCollection from './CharacterCollection';
 import { stories, availableStories, chatSystemPrompt } from './conversations';
 
 function App() {
@@ -43,6 +45,12 @@ function App() {
   });
 
   const [tab, setTab] = useState('home');
+  // Controls which screen appears inside the Companion tab.
+  // 'lobby'      = Main companion screen
+  // 'collection' = Character selection
+  // 'profile'    = Individual character details
+  const [companionView, setCompanionView] = useState('lobby');
+  const [viewedCharacterId, setViewedCharacterId] = useState(null);
   const [mode, setMode] = useState('story');
   const [scene, setScene] = useState(null);
   const [node, setNode] = useState('start');
@@ -61,6 +69,26 @@ function App() {
   const xp = data.relationships[character.id]?.xp || 0;
   const level = levelFromXp(xp);
   const chatHistory = data.chatHistory || [];
+
+
+    /*
+    * Character Profile — Viewing Data
+    *
+    * The viewed character is separate from the
+    * active companion.
+    *
+    * Opening Josuke's profile will not change
+    * Bruno's active status or saved XP.
+    */
+
+    const viewedCharacter =
+      companions.find(c => c.id === viewedCharacterId) || character;
+
+    const viewedXp =
+      data.relationships[viewedCharacter.id]?.xp || 0;
+
+    const viewedLevel = levelFromXp(viewedXp);
+
 
   function startScene(s) {
     setScene(s.id);
@@ -446,12 +474,82 @@ function App() {
           </>
         )}
 
+        
         {/* COMPANION TAB */}
         {tab === 'companions' && (
           <>
-            <Lobby character={character} level={level} />
+            {companionView === 'collection' ? (
+              <CharacterCollection
+                characters={companions}
+                selectedId={character.id}
+                relationships={data.relationships}
+                onSelectCharacter={(characterId) => {
+                  // Save which character was selected for viewing.
+                  setViewedCharacterId(characterId);
+                  setCompanionView('profile');
+                }}
+                onBack={() => setCompanionView('lobby')}
+              />
+            ) : companionView === 'lobby' ? (
+              <Lobby
+                character={character}
+                level={level}
+                xp={xp}
+                onOpenCharacters={() => setCompanionView('collection')}
+              />
+            
+                ) : (
+                  <div className="panel">
+                    <button
+                      type="button"
+                      className="secondaryButton"
+                      onClick={() => setCompanionView('collection')}
+                    >
+                      ← Back to Characters
+                    </button>
 
-            <div className="panel companionCard">
+                    <h2>{viewedCharacter.name}</h2>
+
+                    <img
+                      src={
+                        viewedCharacter.id === 'bruno'
+                          ? `${import.meta.env.BASE_URL}characters/bruno-classic-full.png`
+                          : viewedCharacter.image
+                      }
+                      alt={viewedCharacter.name}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        maxWidth: '320px',
+                        height: '360px',
+                        objectFit: 'contain',
+                        margin: '20px auto'
+                      }}
+                    />
+
+                    <p>{viewedCharacter.role}</p>
+
+                    <p>
+                      ♥ Relationship Level {viewedLevel}
+                    </p>
+
+                    <p>{viewedXp} total relationship XP</p>
+
+                    {viewedCharacter.id === character.id && (
+                      <p>★ Active Companion</p>
+                    )}
+                  </div>
+                )}
+
+
+
+            {/* ==========================================
+                CHARACTER PROFILE CONTENT
+                Only visible when viewing a character.
+                ========================================== */}
+            {companionView === 'profile' && (
+              <>
+                <div className="panel companionCard">
               <img src={character.alt} alt="Bruno Bucciarati alternate portrait" />
               <div>
                 <span className="eyebrow">ACTIVE COMPANION</span>
@@ -621,11 +719,16 @@ function App() {
                 </div>
               )}
             </div>
+            
             <p className="hint">
               More companions can be added later, each with separate relationship progress.
             </p>
+
+              </>
+            )}
           </>
         )}
+
 
         {/* PROFILE TAB */}
         {tab === 'profile' && (
