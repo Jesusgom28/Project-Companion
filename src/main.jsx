@@ -529,11 +529,27 @@ function App() {
 
                     <p>{viewedCharacter.role}</p>
 
-                    <p>
-                      ♥ Relationship Level {viewedLevel}
-                    </p>
+                    
+                    <div className="character-profile-progress">
+                      <p>
+                        ♥ Relationship Level {viewedLevel}
+                      </p>
 
-                    <p>{viewedXp} total relationship XP</p>
+                      <div className="bar">
+                        <div
+                          style={{
+                            width: `${viewedXp % 100}%`
+                          }}
+                        />
+                      </div>
+
+                      <small>
+                        {viewedXp % 100} / 100 XP to next level
+                      </small>
+
+                      <p>{viewedXp} total relationship XP</p>
+                    </div>
+
 
                     {viewedCharacter.id === character.id && (
                       <p>★ Active Companion</p>
@@ -547,7 +563,8 @@ function App() {
                 CHARACTER PROFILE CONTENT
                 Only visible when viewing a character.
                 ========================================== */}
-            {companionView === 'profile' && (
+            
+              {companionView === 'profile' && viewedCharacter.id === 'bruno' && (
               <>
                 <div className="panel companionCard">
               <img src={character.alt} alt="Bruno Bucciarati alternate portrait" />
